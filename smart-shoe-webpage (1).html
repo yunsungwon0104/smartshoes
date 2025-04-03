@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스마트 신발: 자동 굽 조절 시스템</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --accent: #e74c3c;
+        }
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--dark);
+            background-color: var(--light);
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        nav {
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        nav li {
+            padding: 1rem;
+        }
+        
+        nav a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: var(--primary);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        section {
+            margin-bottom: 3rem;
+        }
+        
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 3rem 1rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .hero h2 {
+            margin-bottom: 1rem;
+            font-size: 2rem;
+            color: var(--primary);
+        }
+        
+        .hero p {
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-card h3 {
+            color: var(--primary);
+            margin-top: 0;
+        }
+        
+        .tech-specs {
+            background-color: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .tech-item {
+            border-left: 3px solid var(--primary);
+            padding-left: 1rem;
+        }
+        
+        .tech-item h4 {
+            color: var(--primary);
+            margin-top: 0;
+        }
+        
+        .simulation {
+            background-color: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .simulation-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 300px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1rem 0;
+            background-color: #f9f9f9;
+        }
+        
+        .shoe {
+            position: absolute;
+            bottom: 20px;
+            left: calc(50% - 40px);
+            width: 80px;
+            height: 30px;
+            background-color: var(--primary);
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .shoe:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background-color: var(--secondary);
+            border-radius: 0 0 5px 5px;
+            transition: height 0.5s;
+        }
+        
+        .ground {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background-color: #8B4513;
+            transform-origin: bottom left;
+            transition: transform 0.5s;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        button {
+            padding: 0.5rem 1rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .data-display {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .data-item {
+            background-color: #f9f9f9;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 2rem;
+        }
+        
+        .application {
+            background-color: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        
+        .application h3 {
+            color: var(--primary);
+        }
+        
+        .app-interface {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        .app-card {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 1rem;
+            width: 250px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .app-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .weight-optimization {
+            background-color: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>스마트 신발: 자동 굽 조절 시스템</h1>
+        <p>지형에 따라 자동으로 굽을 조절하여 보행의 안정성과 편안함을 제공합니다</p>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="#about">소개</a></li>
+            <li><a href="#features">핵심 기능</a></li>
+            <li><a href="#tech">주요 기술</a></li>
+            <li><a href="#simulation">시뮬레이션</a></li>
+            <li><a href="#application">응용 기능</a></li>
+            <li><a href="#weight">경량화</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <section id="about" class="hero">
+            <h2>주제 선정 이유</h2>
+            <p>현대 사회에서 보행은 일상생활의 중요한 요소이며, 다양한 지형과 환경에서 안전하고 편리한 이동이 요구됩니다. 하지만 기존의 일반 신발은 지형에 따라 최적화된 보행을 지원하지 못해 불편함과 안전 문제를 초래할 수 있습니다. 특히, 경사진 길이나 불규칙한 노면에서는 신체에 부담을 주거나 미끄러짐으로 인해 부상의 위험이 증가합니다.</p>
+        </section>
+        
+        <section id="features">
+            <h2>핵심 기능</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <h3>자동 굽 조절</h3>
+                    <p>경사도를 실시간으로 감지하여 굽의 높이를 자동으로 조절함으로써 보행 안정성을 향상시킵니다.</p>
+                    <p>서보모터를 활용하여 굽 높이를 조절하며, 다양한 지형에서도 균형을 유지할 수 있도록 설계되었습니다.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>보행 패턴 분석</h3>
+                    <p>가속도계 및 자이로스코프 센서를 활용하여 사용자의 보행 패턴을 분석합니다.</p>
+                    <p>분석된 데이터를 기반으로 사용자 맞춤형 피드백을 제공하여 건강한 보행 습관 형성을 지원합니다.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>기대 효과</h3>
+                    <ul>
+                        <li>편안한 보행 경험 제공</li>
+                        <li>안전성 증대</li>
+                        <li>노약자, 장애인 등에게 보행 지원</li>
+                        <li>웨어러블 기술과의 융합</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section id="tech" class="tech-specs">
+            <h2>주요 기술</h2>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <h4>경사 감지 센서 (MPU-6050)</h4>
+                    <p>자이로스코프와 가속도계를 포함하여 신발의 기울기 및 사용자의 보행 패턴을 측정합니다.</p>
+                    <p>I2C 프로토콜을 사용하여 라즈베리파이와 연결되어 실시간으로 데이터를 분석합니다.</p>
+                </div>
+                <div class="tech-item">
+                    <h4>서보모터 (MG996R/MG90S)</h4>
+                    <p>신발 굽을 특정 각도로 조절하여 보행을 최적화합니다.</p>
+                    <p>PWM 신호를 이용해 라즈베리파이가 정밀하게 제어합니다.</p>
+                </div>
+                <div class="tech-item">
+                    <h4>마이크로컨트롤러</h4>
+                    <p>Raspberry Pi Zero 2 W를 활용하여 센서 데이터를 처리하고 모터를 제어합니다.</p>
+                    <p>저전력, 소형 폼팩터, 무선 기능 지원 (Wi-Fi, Bluetooth)으로 최적화되었습니다.</p>
+                </div>
+                <div class="tech-item">
+                    <h4>배터리</h4>
+                    <p>리튬 폴리머 3.7V 1000mAh를 사용하여 스마트 신발에 전력을 공급합니다.</p>
+                    <p>경량, 고용량, 충전 가능한 특성으로 장시간 사용이 가능합니다.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="simulation" class="simulation">
+            <h2>동작 원리 시뮬레이션</h2>
+            <div class="simulation-container">
+                <div class="ground"></div>
+                <div class="shoe"></div>
+            </div>
+            <div class="controls">
+                <button onclick="setSlope('up')">오르막 경사</button>
+                <button onclick="setSlope('flat')">평지</button>
+                <button onclick="setSlope('down')">내리막 경사</button>
+            </div>
+            <div class="data-display">
+                <div class="data-item">경사도: <span id="slope-value">0°</span></div>
+                <div class="data-item">굽 높이: <span id="heel-value">10mm</span></div>
+                <div class="data-item">안정성: <span id="stability">좋음</span></div>
+            </div>
+        </section>
+        
+        <section id="application" class="application">
+            <h2>추가 기능</h2>
+            <div class="app-interface">
+                <div class="app-card">
+                    <div class="app-icon">📱</div>
+                    <h3>앱 연동</h3>
+                    <p>스마트폰과 Bluetooth로 연결하여 실시간 데이터 확인 및 모드 설정이 가능합니다.</p>
+                </div>
+                <div class="app-card">
+                    <div class="app-icon">🌍</div>
+                    <h3>GPS 연동</h3>
+                    <p>사용자의 보폭을 분석하여 목적지까지 소요 시간을 계산해주는 기능을 제공합니다.</p>
+                </div>
+                <div class="app-card">
+                    <div class="app-icon">👁️</div>
+                    <h3>시각장애인 지원</h3>
+                    <p>보폭 및 지형 정보를 활용한 안내 기능으로 시각장애인의 보행을 돕습니다.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="weight" class="weight-optimization">
+            <h2>경량화 방안</h2>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <h4>경량화된 부품 선택</h4>
+                    <p>MPU-6050과 같은 가벼운 센서 모듈과 리튬 폴리머 배터리를 사용하여 무게를 최소화합니다.</p>
+                </div>
+                <div class="tech-item">
+                    <h4>최소화된 하드우에어 설계</h4>
+                    <p>모듈화 및 통합 설계로 부품 수를 줄이고, Raspberry Pi Zero나 Pico와 같은 소형 마이크로컨트롤러를 사용합니다.</p>
+                </div>
+                <div class="tech-item">
+                    <h4>구조 설계 개선</h4>
+                    <p>경량 플라스틱, 탄소섬유, 경량 합금 등의 재료를 사용하여 무게를 줄이면서도 내구성을 유지합니다.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <footer>
+        <p>스마트 신발: 자동 굽 조절 시스템 프로젝트 © 2025</p>
+    </footer>
+    
+    <script>
+        // 간단한 시뮬레이션 기능
+        function setSlope(type) {
+            const ground = document.querySelector('.ground');
+            const shoe = document.querySelector('.shoe');
+            const slopeValue = document.getElementById('slope-value');
+            const heelValue = document.getElementById('heel-value');
+            const stability = document.getElementById('stability');
+            
+            if (type === 'up') {
+                ground.style.transform = 'rotate(-15deg)';
+                shoe.style.transform = 'rotate(0deg)';
+                slopeValue.textContent = '15° (오르막)';
+                heelValue.textContent = '15mm';
+                stability.textContent = '좋음';
+                shoe.style.setProperty('--heel-height', '15px');
+            } else if (type === 'down') {
+                ground.style.transform = 'rotate(15deg)';
+                shoe.style.transform = 'rotate(0deg)';
+                slopeValue.textContent = '15° (내리막)';
+                heelValue.textContent = '5mm';
+                stability.textContent = '좋음';
+                shoe.style.setProperty('--heel-height', '5px');
+            } else {
+                ground.style.transform = 'rotate(0deg)';
+                shoe.style.transform = 'rotate(0deg)';
+                slopeValue.textContent = '0°';
+                heelValue.textContent = '10mm';
+                stability.textContent = '매우 좋음';
+                shoe.style.setProperty('--heel-height', '10px');
+            }
+        }
+        
+        // 센서 데이터 시뮬레이션 (실제로는 라즈베리파이에서 데이터를 받아옴)
+        function simulateSensorData() {
+            // 실제 구현 시에는 WebSocket 또는 HTTP 요청을 통해 라즈베리파이에서 센서 데이터를 받아옴
+            // 여기서는 간단한 시뮬레이션만 구현
+            const slopeType = document.getElementById('slope-value').textContent;
+            
+            // 라즈베리파이에서 받아온 데이터를 시뮬레이션
+            if (slopeType.includes('오르막')) {
+                return {
+                    accelerometer: { x: 0.2, y: 0.8, z: 9.2 },
+                    gyroscope: { x: 0.5, y: 1.2, z: 0.1 },
+                    angle: 15
+                };
+            } else if (slopeType.includes('내리막')) {
+                return {
+                    accelerometer: { x: -0.2, y: -0.8, z: 9.2 },
+                    gyroscope: { x: -0.5, y: -1.2, z: 0.1 },
+                    angle: -15
+                };
+            } else {
+                return {
+                    accelerometer: { x: 0, y: 0, z: 9.8 },
+                    gyroscope: { x: 0, y: 0, z: 0 },
+                    angle: 0
+                };
+            }
+        }
+        
+        // 실제 구현 시 WebSocket 연결을 통해 라즈베리파이와 통신
+        /*
+        const socket = new WebSocket('ws://raspberrypi-ip:8080');
+        
+        socket.onopen = function(e) {
+            console.log('웹소켓 연결 성공');
+            // 연결 성공 시 센서 데이터 요청
+            socket.send(JSON.stringify({ type: 'getSensorData' }));
+        };
+        
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            if (data.type === 'sensorData') {
+                // 센서 데이터를 받아 UI 업데이트
+                updateUI(data.sensorData);
+            }
+        };
+        
+        function updateUI(sensorData) {
+            // 센서 데이터를 기반으로 UI 업데이트
+            document.getElementById('slope-value').textContent = sensorData.angle + '°';
+            
+            // 경사에 따라 굽 높이 계산
+            const heelHeight = 10 + sensorData.angle * 0.33; // 간단한 계산식
+            document.getElementById('heel-value').textContent = heelHeight.toFixed(1) + 'mm';
+            
+            // 안정성 계산 (실제로는 더 복잡한 알고리즘 사용)
+            const stability = Math.abs(sensorData.angle) < 5 ? '매우 좋음' : '좋음';
+            document.getElementById('stability').textContent = stability;
+        }
+        */
+        
+        // 배터리 레벨 업데이트 시뮬레이션
+        setInterval(function() {
+            // 실제 구현 시에는 라즈베리파이에서 배터리 레벨을 받아옴
+            const batteryLevel = Math.floor(Math.random() * 20) + 80; // 80~100% 사이의 값
+            // document.getElementById('battery-level').textContent = batteryLevel + '%';
+        }, 10000);
+    </script>
+</body>
+</html>
